@@ -17,3 +17,4 @@ Route::get('/even', function () {
 Route::get('/prime', function () {
     return view('prime_number');
 })->name('prime');
+
