@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,3 +19,5 @@ Route::get('/prime', function () {
     return view('prime_number');
 })->name('prime');
 
+
+Route::resource('users', UserController::class);

@@ -13,6 +13,9 @@
         <li class="nav-item">
           <a class="nav-link" href="{{ route('multable') }}">Multiplication Table</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ route('users') }}">users</a>
+        </li>
       </ul>
     </div>
   </nav>
