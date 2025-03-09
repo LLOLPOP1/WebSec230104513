@@ -1,88 +1,84 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.master')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product List</title>
-    
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-</head>
+@section('title', 'Products')
 
-<body>
-    <div class="container">
-        <h1>Product List</h1>
-    </div>
-    <div class="col col-2">
-        <a href="{{ route('products_edit') }}" class="btn btn-success form-control">Add Product</a>
+@section('content')
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Products</h1>
+        <a href="{{ route('products.edit') }}" class="btn btn-success">Add Product</a>
     </div>
 
-    <form>
-        <div class="row">
-            <div class="col col-sm-2">
+    <form class="mb-4">
+        <div class="row g-2">
+            <div class="col-md-2">
                 <input name="keywords" type="text" class="form-control" placeholder="Search Keywords"
                     value="{{ request()->keywords }}" />
             </div>
-            <div class="col col-sm-2">
+            <div class="col-md-2">
                 <input name="min_price" type="number" class="form-control" placeholder="Min Price"
                     value="{{ request()->min_price }}" />
             </div>
-            <div class="col col-sm-2">
+            <div class="col-md-2">
                 <input name="max_price" type="number" class="form-control" placeholder="Max Price"
                     value="{{ request()->max_price }}" />
             </div>
-            <div class="col col-sm-2">
+            <div class="col-md-2">
                 <select name="order_by" class="form-select">
-                    <option value="" {{ request()->order_by == '' ? 'selected' : '' }} disabled>Order By
-                    </option>
+                    <option value="" disabled {{ request()->order_by ? '' : 'selected' }}>Order By</option>
                     <option value="name" {{ request()->order_by == 'name' ? 'selected' : '' }}>Name</option>
                     <option value="price" {{ request()->order_by == 'price' ? 'selected' : '' }}>Price</option>
                 </select>
             </div>
-            <div class="col col-sm-2">
+            <div class="col-md-2">
                 <select name="order_direction" class="form-select">
-                    <option value="" {{ request()->order_direction == '' ? 'selected' : '' }} disabled>Order
-                        Direction</option>
+                    <option value="" disabled {{ request()->order_direction ? '' : 'selected' }}>Order Direction</option>
                     <option value="ASC" {{ request()->order_direction == 'ASC' ? 'selected' : '' }}>ASC</option>
-                    <option value="DESC" {{ request()->order_direction == 'DESC' ? 'selected' : '' }}>DESC
-                    </option>
+                    <option value="DESC" {{ request()->order_direction == 'DESC' ? 'selected' : '' }}>DESC</option>
                 </select>
             </div>
-            <div class="col col-sm-1">
-                <button type="submit" class="btn btn-primary">Submit</button>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-primary w-100">Submit</button>
             </div>
-            <div class="col col-sm-1">
-                <button type="reset" class="btn btn-danger">Reset</button>
+            <div class="col-md-1">
+                <a href="{{ route('products.index') }}" class="btn btn-danger w-100">Reset</a>
             </div>
         </div>
     </form>
-    @foreach ($products as $product)
-        <div class="card mt-2">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col col-sm-12 col-lg-4">
-                        <!-- Placeholder image if no photo is available -->
-                        <img src="{{ asset('images/' . $product->photo) }}" class="img-thumbnail"
-                            alt="{{ $product->name }}" width="100%">
-                    </div>
-                    <div class="col col-sm-12 col-lg-8 mt-3">
-                        <h3>{{ $product->name }}</h3>
-                        <table class="table table-striped">
+
+    @forelse ($products as $product)
+        <div class="card mb-3 shadow-sm">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img src="{{ asset("images/products/$product->photo") }}" class="img-fluid rounded-start" alt="{{ $product->name }}">
+                </div>
+
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">{{ $product->name }}</h5>
+                            <div class="d-flex">
+                                <a href="{{ route('products.edit', $product->id) }}" class="btn btn-success me-2">Edit</a>
+                                <form action="{{ route('products.delete', $product->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this product?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <table class="table table-bordered">
                             <tr>
-                                <th width="20%">Name</th>
-                                <td>{{ $product->name }}</td>
-                            </tr>
-                            <tr>
-                                <th width="20%">price</th>
-                                <td>{{ $product->price }}</td>
-                            </tr>
-                            <tr>
-                                <th>Model</th>
+                                <th width="20%">Model</th>
                                 <td>{{ $product->model }}</td>
                             </tr>
                             <tr>
                                 <th>Code</th>
                                 <td>{{ $product->code }}</td>
+                            </tr>
+                            <tr>
+                                <th>Price</th>
+                                <td>{{ $product->price }} LE</td>
                             </tr>
                             <tr>
                                 <th>Description</th>
@@ -93,8 +89,8 @@
                 </div>
             </div>
         </div>
-    @endforeach
-    </div>
-</body>
-
-</html>
+    @empty
+        <div class="alert alert-warning text-center">No products found.</div>
+    @endforelse
+</div>
+@endsection
