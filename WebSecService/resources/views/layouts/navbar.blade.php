@@ -1,4 +1,3 @@
-<!-- resources/views/layouts/navbar.blade.php -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
     <div class="container">
         <a class="navbar-brand fw-bold" href="{{ route('home') }}">
@@ -35,9 +34,43 @@
                         <i class="bi bi-people"></i> Users
                     </a>
                 </li>
+                <li class="nav-item">
+                     <a class="nav-link" href="{{ route('products.index') }}">
+                           <i class="bi bi-box-seam"></i> Products
+                     </a>
+                </li>
             </ul>
 
-            <!-- زر تفعيل الوضع المظلم -->
+            @guest
+                <a href="{{ route('login') }}" class="btn btn-outline-primary ms-3">
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                </a>
+                <a href="{{ route('register') }}" class="btn btn-primary ms-2">
+                    <i class="bi bi-person-plus-fill"></i> Register
+                </a>
+            @else
+                <div class="dropdown ms-3">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> {{ Auth::user()->name }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item" href="{{ route('profile') }}">
+                                <i class="bi bi-person"></i> Profile
+                            </a>
+                        </li>
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            @endguest
+
             <button id="darkModeToggle" class="btn btn-outline-dark ms-3">
                 <i class="bi bi-moon-stars-fill"></i>
             </button>
@@ -45,7 +78,7 @@
     </div>
 </nav>
 
-<!-- ✅ سكريبت الوضع المظلم -->
+
 <script>
     const darkModeToggle = document.getElementById('darkModeToggle');
     const body = document.body;
@@ -60,7 +93,6 @@
     });
 </script>
 
-<!-- ✅ تحسينات الوضع المظلم -->
 <style>
     body.dark-mode {
         background-color: #121212;

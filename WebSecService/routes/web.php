@@ -20,6 +20,7 @@ Route::get('/prime', function () {
     return view('prime_number');
 })->name('prime');
 ///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
 Route::get('/mini-test', function () {
     $bill = new stdClass();
     $bill->items = [
@@ -88,9 +89,9 @@ function getGradeLetter($grade) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-Route::get('products/edit/{products?}', [ProductController::class, 'edit'])->name('products.edit');
-Route::post('products/save/{products?}', [ProductController::class, 'store'])->name('products.save');
-Route::get('products/delete/{products}', [ProductController::class, 'destroy'])->name('products.delete');
+Route::get('products/edit/{product?}', [ProductController::class, 'edit'])->name('products.edit');
+Route::post('products/store/{product?}', [ProductController::class, 'store'])->name('products.store');
+Route::get('products/delete/{product}', [ProductController::class, 'destroy'])->name('products.delete');
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
 Route::get('user/create', [UserController::class, 'create'])->name('users.create');
@@ -105,3 +106,4 @@ Route::get('/register', [UserController::class, 'register'])->name('register');
 Route::post('/register', [UserController::class, 'doRegister'])->name('do_register');
 Route::get('/logout', [UserController::class, 'logout'])->name(name: 'logout');
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Route::post('/login', [UserController::class, 'doLogin'])->name('do_login');

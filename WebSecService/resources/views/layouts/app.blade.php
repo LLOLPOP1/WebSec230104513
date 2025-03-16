@@ -38,7 +38,7 @@
 
     {{-- ✅ الفوتر --}}
     <footer class="bg-gray-800 text-white text-center py-4 mt-8">
-        <p>&copy; {{ date('Y') }} Your Website. All rights reserved.</p>
+        <p>&copy; {{ date('Y') }} WebSEC. All rights reserved.</p>
     </footer>
 
     {{-- ✅ سكريبت لتفعيل الوضع المظلم --}}
