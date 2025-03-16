@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -9,15 +9,15 @@ Route::get('/', function () {
 })->name('home');
 ///////////////////////////////////////////////////////////////////////////
 Route::get('/multable', function () {
-    return view('lec1.multable');
+    return view('multable');
 })->name('multable');
 ///////////////////////////////////////////////////////////////////////////
 Route::get('/even', function () {
-    return view('lec1.even_number');
+    return view('even_number');
 })->name('even');
 ///////////////////////////////////////////////////////////////////////////
 Route::get('/prime', function () {
-    return view('lec1.prime_number');
+    return view('prime_number');
 })->name('prime');
 ///////////////////////////////////////////////////////////////////////////
 Route::get('/mini-test', function () {
@@ -85,11 +85,12 @@ function getGradeLetter($grade) {
     if ($grade >= 60) return 'D';
     return 'F';
 }
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Route::get('/products', [ProductsController::class, 'index'])->name('products.index');
-Route::get('products/edit/{products?}', [ProductsController::class, 'edit'])->name('products.edit');
-Route::post('products/save/{products?}', [ProductsController::class, 'store'])->name('products.save');
-Route::get('products/delete/{products}', [ProductsController::class, 'destroy'])->name('products.delete');
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('products/edit/{products?}', [ProductController::class, 'edit'])->name('products.edit');
+Route::post('products/save/{products?}', [ProductController::class, 'store'])->name('products.save');
+Route::get('products/delete/{products}', [ProductController::class, 'destroy'])->name('products.delete');
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
 Route::get('user/create', [UserController::class, 'create'])->name('users.create');
@@ -102,5 +103,5 @@ Route::get('/login', [UserController::class, 'login'])->name('login');
 Route::post('/login', [UserController::class, 'doLogin'])->name('do_login');
 Route::get('/register', [UserController::class, 'register'])->name('register');
 Route::post('/register', [UserController::class, 'doRegister'])->name('do_register');
-Route::get('/logout', [UserController::class, 'logout'])->name('logout');
+Route::get('/logout', [UserController::class, 'logout'])->name(name: 'logout');
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
