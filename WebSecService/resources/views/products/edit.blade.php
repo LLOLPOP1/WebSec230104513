@@ -12,6 +12,7 @@
                 </div>
 
                 <div class="card-body">
+                    {{-- عرض الأخطاء إن وجدت --}}
                     @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul class="mb-0">
@@ -22,6 +23,7 @@
                         </div>
                     @endif
 
+                    {{-- نموذج إدخال المنتج --}}
                     <form action="{{ route('products.save', $products->id ?? '') }}" method="POST">
                         @csrf
 
@@ -60,7 +62,6 @@
                                 {{ $products->id ? 'Update' : 'Add' }} Product
                             </button>
                         </div>
-                        
                     </form>
                 </div>
             </div>

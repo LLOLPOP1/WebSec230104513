@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log; // Import the Log facade
 class ProductController extends Controller
 {
     // Display the list of products with filtering, sorting, and pagination
-    public function index(Request $request) // ✅ تغيير الاسم من "list" إلى "index"
+    public function list(Request $request)
     {
         // Validate request parameters
         $request->validate([
@@ -38,7 +38,7 @@ class ProductController extends Controller
         } catch (\Exception $e) {
             // Handle any errors (e.g., log the error and show a user-friendly message)
             Log::error('Error fetching products: ' . $e->getMessage());
-            return redirect()->route('products.index')->with('error', 'An error occurred while fetching products.');
+            return redirect()->route('products_list')->with('error', 'An error occurred while fetching products.');
         }
     }
 
@@ -78,7 +78,7 @@ class ProductController extends Controller
             $product->save();
 
             // Redirect to the product list page with a success message
-            return redirect()->route('products.index')->with('success', 'Product saved successfully!');
+            return redirect()->route('products_list')->with('success', 'Product saved successfully!');
         } catch (\Exception $e) {
             // Handle any errors (e.g., log the error and show a user-friendly message)
             Log::error('Error saving product: ' . $e->getMessage());
