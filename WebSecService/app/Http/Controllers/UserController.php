@@ -6,6 +6,10 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+<<<<<<< Updated upstream
+=======
+use App\Services\RoleService;
+>>>>>>> Stashed changes
 
 class UserController extends Controller
 {
@@ -103,9 +107,44 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
 
-    public function destroy(User $user)
+    public function delete(User $user)
     {
         $user->delete();
-        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+        return redirect()->route('admin.users.index')->with('success', 'User deleted successfully.');
+    }
+
+    public function doLogin(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+
+            // Redirect based on role
+            return $this->redirectBasedOnRole();
+        }
+
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ]);
+    }
+
+    private function redirectBasedOnRole()
+    {
+        if (auth()->user()->role === RoleService::ADMIN) {
+            return redirect()->route('admin.dashboard');
+        } elseif (auth()->user()->role === RoleService::EMPLOYEE) {
+            return redirect()->route('employee.dashboard');
+        } else {
+            return redirect()->route('customer.dashboard');
+        }
+    }
+
+    public function showLoginForm()
+    {
+        return view('auth.login');
     }
 }

@@ -7,13 +7,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>WebSec - @yield('title')</title>
 
-    {{-- Bootstrap CSS --}}
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
 
-    {{-- Bootstrap Icons --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 
-    {{-- Custom Styles --}}
     <style>
         .navbar {
             background-color: #343a40;
@@ -35,21 +32,17 @@
         }
     </style>
 
-    {{-- Bootstrap JS --}}
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
 </head>
 
 <body>
 
-    {{-- Navbar --}}
     @include('layouts.navbar')
 
-    {{-- Main Content --}}
     <div class="container mt-4">
         @yield('content')
     </div>
 
-    {{-- Footer --}}
     <footer>
         <p>&copy; 2025 WebSec. All rights reserved.</p>
     </footer>

@@ -1,11 +1,24 @@
 <?php
 
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\{
+    AdminController,
+    CustomerController,
+    EmployeeController,
+    ProductController,
+    PurchaseController,
+    UserController
+};
+use App\Http\Controllers\CreditController;
+use App\Services\GradeService;
+use App\Services\RoleService;
 use Illuminate\Support\Facades\Route;
 
+// Public Routes
 Route::get('/', function () {
-    return view('welcome');
+    if (auth()->check()) {
+        return redirect()->route(auth()->user()->getDashboardRoute());
+    }
+    return redirect()->route('login');
 })->name('home');
 ///////////////////////////////////////////////////////////////////////////
 Route::get('/multable', function () {
@@ -87,23 +100,65 @@ function getGradeLetter($grade) {
     return 'F';
 }
 
+// Guest Routes
+Route::middleware('guest')->group(function () {
+    Route::controller(UserController::class)->group(function () {
+        Route::get('login', 'showLoginForm')->name('login');
+        Route::post('login', 'doLogin')->name('login.submit');
+        Route::get('register', 'showRegistrationForm')->name('register');
+        Route::post('register', 'doRegister')->name('register.submit');
+    });
+});
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('products/edit/{product?}', [ProductController::class, 'edit'])->name('products.edit');
 Route::post('products/store/{product?}', [ProductController::class, 'store'])->name('products.store');
 Route::get('products/delete/{product}', [ProductController::class, 'destroy'])->name('products.delete');
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Route::get('/users', [UserController::class, 'index'])->name('users.index');
-Route::get('user/create', [UserController::class, 'create'])->name('users.create');
-Route::post('user/create', [UserController::class, 'store'])->name('users.store');
-Route::get('user/edit/{user?}', [UserController::class, 'edit'])->name('users.edit');
-Route::post('user/save/{user?}', [UserController::class, 'update'])->name('users.update');
-Route::get('user/delete/{user}', [UserController::class, 'destroy'])->name('users.destroy');
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Route::get('/login', [UserController::class, 'login'])->name('login');
-Route::post('/login', [UserController::class, 'doLogin'])->name('do_login');
-Route::get('/register', [UserController::class, 'register'])->name('register');
-Route::post('/register', [UserController::class, 'doRegister'])->name('do_register');
-Route::get('/logout', [UserController::class, 'logout'])->name(name: 'logout');
+
+// Authenticated Routes
+Route::middleware('auth')->group(function () {
+    Route::post('logout', [UserController::class, 'logout'])->name('logout');
+
+    // Admin Routes
+    Route::middleware('role:admin')
+        ->prefix('admin')
+        ->name('admin.')
+        ->group(function () {
+            Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+            Route::resource('users', UserController::class)->names([
+                'index' => 'users.index',
+                'create' => 'users.create',
+                'store' => 'users.store',
+                'show' => 'users.show',
+                'edit' => 'users.edit',
+                'update' => 'users.update',
+                'destroy' => 'users.destroy',
+            ]);
+            Route::resource('employees', EmployeeController::class);
+        });
+
+    // Employee Routes
+    Route::middleware('role:admin,employee')
+        ->prefix('employee')
+        ->name('employee.')
+        ->group(function () {
+            Route::get('dashboard', [EmployeeController::class, 'dashboard'])->name('dashboard');
+            Route::resource('products', ProductController::class);
+            Route::post('credit/{user}/add', [CreditController::class, 'addCredit'])->name('credit.add');
+        });
+
+    // Customer Routes
+    Route::middleware('role:customer')
+        ->prefix('customer')
+        ->name('customer.')
+        ->group(function () {
+            Route::get('dashboard', [CustomerController::class, 'dashboard'])->name('dashboard');
+            Route::get('products', [ProductController::class, 'browse'])->name('products.browse');
+            Route::post('products/{product}/purchase', [PurchaseController::class, 'purchase'])->name('products.purchase');
+            Route::get('purchases', [PurchaseController::class, 'index'])->name('purchases.index');
+        });
+});
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Route::post('/login', [UserController::class, 'doLogin'])->name('do_login');

@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
     <div class="container">
         <a class="navbar-brand fw-bold" href="{{ route('home') }}">
@@ -74,6 +75,65 @@
             <button id="darkModeToggle" class="btn btn-outline-dark ms-3">
                 <i class="bi bi-moon-stars-fill"></i>
             </button>
+=======
+<!-- resources/views/layouts/navbar.blade.php -->
+<nav class="bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <span class="text-white">{{ config('app.name') }}</span>
+                </div>
+                
+                @auth
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        @if(auth()->user()->isAdmin())
+                            <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
+                                Dashboard
+                            </x-nav-link>
+                            <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                                Users
+                            </x-nav-link>
+                        @endif
+
+                        @if(auth()->user()->isEmployee())
+                            <x-nav-link :href="route('employee.dashboard')" :active="request()->routeIs('employee.dashboard')">
+                                Dashboard
+                            </x-nav-link>
+                            <x-nav-link :href="route('employee.products.index')" :active="request()->routeIs('employee.products.*')">
+                                Products
+                            </x-nav-link>
+                        @endif
+
+                        @if(auth()->user()->isCustomer())
+                            <x-nav-link :href="route('customer.dashboard')" :active="request()->routeIs('customer.dashboard')">
+                                Dashboard
+                            </x-nav-link>
+                            <x-nav-link :href="route('customer.products.browse')" :active="request()->routeIs('customer.products.*')">
+                                Shop
+                            </x-nav-link>
+                            <x-nav-link :href="route('customer.purchases.index')" :active="request()->routeIs('customer.purchases.*')">
+                                My Purchases
+                            </x-nav-link>
+                        @endif
+                    </div>
+                @endauth
+            </div>
+
+            <div class="ml-4 flex items-center md:ml-6">
+                @auth
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="text-gray-300 hover:text-white px-3 py-2">
+                            Logout
+                        </button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="text-gray-300 hover:text-white px-3 py-2">Login</a>
+                    <a href="{{ route('register') }}" class="text-gray-300 hover:text-white px-3 py-2">Register</a>
+                @endauth
+            </div>
+>>>>>>> Stashed changes
         </div>
     </div>
 </nav>

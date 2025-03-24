@@ -6,7 +6,6 @@
 <div class="bg-white p-6 rounded-lg shadow-lg">
     <h2 class="text-2xl font-bold text-gray-700 mb-4">Users List</h2>
 
-    {{-- ✅ البحث --}}
     <form method="GET" action="{{ route('users.index') }}" class="flex mb-4">
         <input type="text" name="search" placeholder="Search users..."
             value="{{ request('search') }}"
@@ -16,13 +15,11 @@
         </button>
     </form>
 
-    {{-- ✅ زر إضافة مستخدم جديد --}}
     <a href="{{ route('users.create') }}"
        class="inline-block mb-4 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
         Create New User
     </a>
 
-    {{-- ✅ الجدول --}}
     <table class="w-full border-collapse border border-gray-300">
         <thead>
             <tr class="bg-gray-200">
@@ -54,7 +51,6 @@
         </tbody>
     </table>
 
-    {{-- ✅ الترقيم --}}
     <div class="mt-4">
         {{ $users->links() }}
     </div>

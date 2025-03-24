@@ -9,7 +9,7 @@
             <button type="button" class="btn btn-primary" onclick="doSomething()">Press Me</button>
         </div>
     </div>
-    <script>
+    <script>    
         function doSomething() {
             alert('Hello From JavaScript');
         }

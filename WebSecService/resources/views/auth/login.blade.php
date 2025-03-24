@@ -18,7 +18,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('do_login') }}" method="POST">
+            <form action="{{ route('login') }}" method="POST">
                 @csrf
 
                 <div class="mb-3">
