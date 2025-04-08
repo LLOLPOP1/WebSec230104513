@@ -3,6 +3,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\ProductsController;
 use App\Http\Controllers\Web\UsersController;
+use App\Http\Controllers\Web\PurchasesController;
+use App\Http\Controllers\Web\EmployeesController;
 
 Route::get('register', [UsersController::class, 'register'])->name('register');
 Route::post('register', [UsersController::class, 'doRegister'])->name('do_register');
@@ -16,8 +18,19 @@ Route::post('users/save/{user}', [UsersController::class, 'save'])->name('users_
 Route::get('users/delete/{user}', [UsersController::class, 'delete'])->name('users_delete');
 Route::get('users/edit_password/{user?}', [UsersController::class, 'editPassword'])->name('edit_password');
 Route::post('users/save_password/{user}', [UsersController::class, 'savePassword'])->name('save_password');
+Route::get('users/create-employee', [UsersController::class, 'createEmployee'])->name('create_employee');
+Route::post('users/store-employee', [UsersController::class, 'storeEmployee'])->name('store_employee');
 
+// Purchase routes
+Route::get('purchases', [PurchasesController::class, 'index'])->name('purchases.index');
+Route::post('purchases', [PurchasesController::class, 'store'])->name('purchases.store');
+Route::get('insufficient-credit', function() {
+    return view('purchases.insufficient_credit');
+})->name('insufficient_credit');
 
+// Employee routes
+Route::get('employees/customers', [EmployeesController::class, 'listCustomers'])->name('employees.customers');
+Route::post('employees/add-credit/{user}', [EmployeesController::class, 'addCredit'])->name('employees.add_credit');
 
 Route::get('products', [ProductsController::class, 'list'])->name('products_list');
 Route::get('products/edit/{product?}', [ProductsController::class, 'edit'])->name('products_edit');

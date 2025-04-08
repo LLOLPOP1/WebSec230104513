@@ -16,6 +16,18 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{route('products_list')}}">Products</a>
             </li>
+            @auth
+                @if(auth()->user()->hasRole('Customer'))
+                <li class="nav-item">
+                    <a class="nav-link" href="{{route('purchases.index')}}">My Purchases</a>
+                </li>
+                @endif
+                @if(auth()->user()->hasRole('Employee'))
+                <li class="nav-item">
+                    <a class="nav-link" href="{{route('employees.customers')}}">Manage Customers</a>
+                </li>
+                @endif
+            @endauth
             @can('show_users')
             <li class="nav-item">
                 <a class="nav-link" href="{{route('users')}}">Users</a>

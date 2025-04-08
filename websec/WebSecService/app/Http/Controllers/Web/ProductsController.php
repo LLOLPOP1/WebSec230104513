@@ -40,7 +40,9 @@ class ProductsController extends Controller {
 
 	public function edit(Request $request, Product $product = null) {
 
-		if(!auth()->user()) return redirect('/');
+		if(!auth()->user()->hasPermissionTo('edit_products')) {
+            abort(403, 'You do not have permission to edit products');
+        }
 
 		$product = $product??new Product();
 
@@ -49,27 +51,37 @@ class ProductsController extends Controller {
 
 	public function save(Request $request, Product $product = null) {
 
+		// Check permissions based on whether creating or editing
+        if (!$product && !auth()->user()->hasPermissionTo('add_products')) {
+            abort(403, 'You do not have permission to add products');
+        } elseif ($product && !auth()->user()->hasPermissionTo('edit_products')) {
+            abort(403, 'You do not have permission to edit products');
+        }
+
 		$this->validate($request, [
 	        'code' => ['required', 'string', 'max:32'],
 	        'name' => ['required', 'string', 'max:128'],
 	        'model' => ['required', 'string', 'max:256'],
 	        'description' => ['required', 'string', 'max:1024'],
 	        'price' => ['required', 'numeric'],
+			'stock' => ['required', 'integer', 'min:0'],
 	    ]);
 
 		$product = $product??new Product();
 		$product->fill($request->all());
 		$product->save();
 
-		return redirect()->route('products_list');
+		return redirect()->route('products_list')->with('success', 'Product ' . ($product->wasRecentlyCreated ? 'created' : 'updated') . ' successfully');
 	}
 
 	public function delete(Request $request, Product $product) {
 
-		if(!auth()->user()->hasPermissionTo('delete_products')) abort(401);
+		if(!auth()->user()->hasPermissionTo('delete_products')) {
+            abort(403, 'You do not have permission to delete products');
+        }
 
 		$product->delete();
 
-		return redirect()->route('products_list');
+		return redirect()->route('products_list')->with('success', 'Product deleted successfully');
 	}
 } 

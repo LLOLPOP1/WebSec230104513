@@ -51,6 +51,9 @@ class UsersController extends Controller {
 	    $user->password = bcrypt($request->password); //Secure
 	    $user->save();
 
+        // Assign the Customer role to the newly registered user
+        $user->assignRole('Customer');
+
         return redirect('/');
     }
 
@@ -184,5 +187,43 @@ class UsersController extends Controller {
         $user->save();
 
         return redirect(route('profile', ['user'=>$user->id]));
+    }
+
+    public function createEmployee(Request $request) {
+        // Only admins can create employees
+        if(!auth()->user()->hasRole('Admin')) {
+            abort(401);
+        }
+        
+        return view('users.create_employee');
+    }
+
+    public function storeEmployee(Request $request) {
+        // Only admins can create employees
+        if(!auth()->user()->hasRole('Admin')) {
+            abort(401);
+        }
+        
+        try {
+            $this->validate($request, [
+                'name' => ['required', 'string', 'min:5'],
+                'email' => ['required', 'email', 'unique:users'],
+                'password' => ['required', 'confirmed', Password::min(8)->numbers()->letters()->mixedCase()->symbols()],
+            ]);
+        }
+        catch(\Exception $e) {
+            return redirect()->back()->withInput($request->input())->withErrors('Invalid employee information.');
+        }
+        
+        $user = new User();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = bcrypt($request->password); //Secure
+        $user->save();
+        
+        // Assign the Employee role to the newly created user
+        $user->assignRole('Employee');
+        
+        return redirect()->route('users')->with('success', 'Employee created successfully.');
     }
 } 

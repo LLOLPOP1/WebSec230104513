@@ -49,4 +49,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    
+    /**
+     * Get the purchases for the user.
+     */
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class);
+    }
 }

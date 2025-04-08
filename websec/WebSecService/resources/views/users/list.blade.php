@@ -5,6 +5,11 @@
     <div class="col col-10">
         <h1>Users</h1>
     </div>
+    @if(auth()->user()->hasRole('Admin'))
+    <div class="col col-2 text-end">
+        <a href="{{ route('create_employee') }}" class="btn btn-success">Add Employee</a>
+    </div>
+    @endif
 </div>
 <form>
     <div class="row">
