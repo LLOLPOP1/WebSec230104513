@@ -85,6 +85,9 @@ function getGradeLetter($grade) {
     if ($grade >= 60) return 'D';
     return 'F';
 }
+Route::get('/products/{product}/toggle-favorite', [ProductsController::class, 'toggleFavorite'])
+    ->name('products_toggle_favorite')
+    ->middleware('auth');
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
