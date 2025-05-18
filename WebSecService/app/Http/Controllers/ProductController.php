@@ -85,4 +85,15 @@ class ProductController extends Controller
             return redirect()->back()->with('error', 'An error occurred while saving the product.');
         }
     }
+
+    {
+    if(!auth()->user()->hasPermissionTo('add_to_favorites')) {
+        abort(401);
+    }
+
+    $product->is_favorite = !$product->is_favorite;
+    $product->save();
+
+    return redirect()->back();
+}
 }
