@@ -1,107 +1,153 @@
 <?php
-
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\UserController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Web\ProductsController;
+use App\Http\Controllers\Web\UsersController;
+use App\Http\Controllers\Web\PurchasesController;
 
+Route::get('register', [UsersController::class, 'register'])->name('register');
+Route::post('register', [UsersController::class, 'doRegister'])->name('do_register');
+Route::get('login', [UsersController::class, 'login'])->name('login');
+Route::post('login', [UsersController::class, 'doLogin'])->name('do_login');
+Route::get('logout', [UsersController::class, 'doLogout'])->name('do_logout');
+Route::get('users', [UsersController::class, 'list'])->name('users');
+Route::get('profile/{user?}', [UsersController::class, 'profile'])->name('profile');
+Route::get('users/edit/{user?}', [UsersController::class, 'edit'])->name('users_edit');
+Route::post('users/save/{user}', [UsersController::class, 'save'])->name('users_save');
+Route::get('users/delete/{user}', [UsersController::class, 'delete'])->name('users_delete');
+Route::get('users/edit_password/{user?}', [UsersController::class, 'editPassword'])->name('edit_password');
+Route::post('users/save_password/{user}', [UsersController::class, 'savePassword'])->name('save_password');
+Route::get('verify', [UsersController::class, 'verify'])->name('verify');
+Route::get('/auth/google', 
+[UsersController::class, 'redirectToGoogle'])
+->name('login_with_google');
+
+Route::get('/auth/google/callback', 
+[UsersController::class, 'handleGoogleCallback']);
+
+Route::get('/customers', [UsersController::class, 'customers'])->name('customers.index');
+Route::post('/purchases', [PurchasesController::class, 'store'])->name('purchases.store');
+Route::get('/purchases', [PurchasesController::class, 'index'])->name('purchases.index');
+Route::get('products', [ProductsController::class, 'list'])->name('products_list');
+Route::get('products/edit/{product?}', [ProductsController::class, 'edit'])->name('products_edit');
+Route::post('products/save/{product?}', [ProductsController::class, 'save'])->name('products_save');
+Route::get('products/delete/{product}', [ProductsController::class, 'delete'])->name('products_delete');
+Route::post('/users/{user}/credit', [UsersController::class, 'addCredit'])->name('users.add-credit');
 Route::get('/', function () {
     return view('welcome');
-})->name('home');
-///////////////////////////////////////////////////////////////////////////
-Route::get('/multable', function () {
-    return view('multable');
-})->name('multable');
-///////////////////////////////////////////////////////////////////////////
+});
+
+Route::get('/multable', function (Request $request) {
+    $j = $request->number??5;
+    $msg = $request->msg;
+    return view('multable', compact("j", "msg"));
+});
+
 Route::get('/even', function () {
-    return view('even_number');
-})->name('even');
-///////////////////////////////////////////////////////////////////////////
+    return view('even');
+});
+
 Route::get('/prime', function () {
-    return view('prime_number');
-})->name('prime');
-///////////////////////////////////////////////////////////////////////////
-Route::get('/mini-test', function () {
-    $bill = new stdClass();
-    $bill->items = [
-        (object)['name' => 'Apple', 'quantity' => 4, 'price' => 7],
-        (object)['name' => 'Banana', 'quantity' => 5, 'price' => 1],
-        (object)['name' => 'Orange', 'quantity' => 3, 'price' => 2],
-        (object)['name' => 'sss', 'quantity' => 3, 'price' => 2],
-    ];
-    $bill->total = array_reduce($bill->items, function ($carry, $item) {
-        return $carry + ($item->quantity * $item->price);
-    }, 0);
-    return view('lec1.mini_test', compact('bill'));
-})->name('mini-test');
+    return view('prime');
+});
 
-///////////////////////////////////////////////////////////////////////////
-Route::get('/gpa', function () {
-    $courses = [
-        ['code' => 'CS101', 'name' => 'Introduction to Programming', 'ch' => 3, 'grade' => 85],
-        ['code' => 'CS102', 'name' => 'Data Structures', 'ch' => 3, 'grade' => 92],
-        ['code' => 'MATH201', 'name' => 'Calculus I', 'ch' => 4, 'grade' => 88],
-        ['code' => 'ENG101', 'name' => 'Academic Writing', 'ch' => 3, 'grade' => 78],
-        ['code' => 'HIST101', 'name' => 'World History', 'ch' => 3, 'grade' => 80],
-        ['code' => 'PHYS101', 'name' => 'Physics I', 'ch' => 4, 'grade' => 75],
-        ['code' => 'CHEM101', 'name' => 'General Chemistry', 'ch' => 4, 'grade' => 82],
-        ['code' => 'BIO101', 'name' => 'Biology I', 'ch' => 3, 'grade' => 89]
-    ];
+Route::get('/test', function () {
+    return view('test');
+});
 
-    $totalCredits = 0;
-    $totalPoints = 0;
+Route::get('/cryptography', function (Request $request) {
 
-    foreach ($courses as &$course) {
-        $course['gpa'] = calculateGPA($course['grade']);
-        $course['letter'] = getGradeLetter($course['grade']);
-        $totalCredits += $course['ch'];
-        $totalPoints += $course['gpa'] * $course['ch'];
+    $data = $request->data??"Welcome to Cryptography";
+    $action = $request->action??"Encrypt";
+    $result = $request->result??"";
+    $status = "Failed";
+    $size = 0;
+
+    if($request->action=="Encrypt") {
+
+        $temp = openssl_encrypt($request->data, 'aes-128-ecb', 'thisisasecretkey', OPENSSL_RAW_DATA, '');
+        if($temp) {
+            $status = 'Encrypted Successfully';
+            $result = base64_encode($temp);
+        }
+    }
+    else if($request->action=="Decrypt") {
+
+        $temp = base64_decode($request->data);
+
+        $result = openssl_decrypt($temp, 'aes-128-ecb',  'thisisasecretkey', OPENSSL_RAW_DATA, '');
+
+        if($result) $status = 'Decrypted Successfully';
+    }
+    else if($request->action=="Hash") {
+
+        $temp = hash('sha256', $request->data);
+
+        $result = base64_encode($temp);
+
+        $status = 'Hashed Successfully';
+    }
+    else if($request->action=="Sign") {
+
+        $path = storage_path('app/private/useremail@domain.com.pfx');
+        $password = '12345678';
+        $certificates = [];
+
+        $pfx = file_get_contents($path);
+        openssl_pkcs12_read($pfx, $certificates, $password);
+        $privateKey = $certificates['pkey'];
+
+        $signature = '';
+        if(openssl_sign($request->data, $signature, $privateKey, 'sha256')) {
+            $result = base64_encode($signature);
+            $status = 'Signed Successfully';
+        }
+    }
+    else if($request->action=="Verify") {
+
+        $signature = base64_decode($request->result);
+
+        $path = storage_path('app/public/useremail@domain.com.crt');
+        $publicKey = file_get_contents($path);
+
+        if(openssl_verify($request->data, $signature, $publicKey, 'sha256')) {
+            $status = 'Verified Successfully';
+        }
+    }
+    else if($request->action=="KeySend") {
+
+        $path = storage_path('app/public/useremail@domain.com.crt');
+        $publicKey = file_get_contents($path);
+        $temp = '';
+
+        if(openssl_public_encrypt($request->data, $temp, $publicKey)) {
+            $result = base64_encode($temp);
+            $status = 'Key is Encrypted Successfully';
+        }
+    }
+    else if($request->action=="KeyRecive") {
+
+        $path = storage_path('app/private/useremail@domain.com.pfx');
+        $password = '12345678';
+        $certificates = [];
+
+        $pfx = file_get_contents($path);
+        openssl_pkcs12_read($pfx, $certificates, $password);
+        $privateKey = $certificates['pkey'];
+
+        $encryptedKey = base64_decode($request->data);
+        $result = '';
+
+        if(openssl_private_decrypt($encryptedKey, $result, $privateKey)) {
+
+            $status = 'Key is Decrypted Successfully';
+        }
     }
 
-    $overallGPA = $totalPoints / $totalCredits;
-    $overallGradeLetter = getGradeLetter($overallGPA * 25); // تحويل الـ GPA إلى مقياس 100 لحساب التقدير
-
-    return view('lec1.gpa_task', compact('courses', 'overallGPA', 'overallGradeLetter'));
-})->name('gpa');
 
 
-function calculateGPA($grade) {
-    if ($grade >= 90) return 4.0;
-    if ($grade >= 85) return 3.5;
-    if ($grade >= 80) return 3.0;
-    if ($grade >= 75) return 2.5;
-    if ($grade >= 70) return 2.0;
-    if ($grade >= 65) return 1.5;
-    if ($grade >= 60) return 1.0;
-    return 0.0;
-}
 
-function getGradeLetter($grade) {
-    if ($grade >= 90) return 'A';
-    if ($grade >= 85) return 'B+';
-    if ($grade >= 80) return 'B';
-    if ($grade >= 75) return 'C+';
-    if ($grade >= 70) return 'C';
-    if ($grade >= 65) return 'D+';
-    if ($grade >= 60) return 'D';
-    return 'F';
-}
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-Route::get('products/edit/{products?}', [ProductController::class, 'edit'])->name('products.edit');
-Route::post('products/save/{products?}', [ProductController::class, 'store'])->name('products.save');
-Route::get('products/delete/{products}', [ProductController::class, 'destroy'])->name('products.delete');
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Route::get('/users', [UserController::class, 'index'])->name('users.index');
-Route::get('user/create', [UserController::class, 'create'])->name('users.create');
-Route::post('user/create', [UserController::class, 'store'])->name('users.store');
-Route::get('user/edit/{user?}', [UserController::class, 'edit'])->name('users.edit');
-Route::post('user/save/{user?}', [UserController::class, 'update'])->name('users.update');
-Route::get('user/delete/{user}', [UserController::class, 'destroy'])->name('users.destroy');
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Route::get('/login', [UserController::class, 'login'])->name('login');
-Route::post('/login', [UserController::class, 'doLogin'])->name('do_login');
-Route::get('/register', [UserController::class, 'register'])->name('register');
-Route::post('/register', [UserController::class, 'doRegister'])->name('do_register');
-Route::get('/logout', [UserController::class, 'logout'])->name(name: 'logout');
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    return view('cryptography', compact('data', 'result', 'action', 'status'));
+})->name('cryptography');
+

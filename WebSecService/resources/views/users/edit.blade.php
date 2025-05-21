@@ -1,51 +1,57 @@
-@extends('layouts.app')
-
+@extends('layouts.master')
 @section('title', 'Edit User')
-
 @section('content')
-<div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md mt-8">
-    <h2 class="text-2xl font-bold text-gray-700 mb-4 text-center">Edit User</h2>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+  $("#clean_permissions").click(function(){
+    $('#permissions').val([]);
+  });
+  $("#clean_roles").click(function(){
+    $('#roles').val([]);
+  });
+});
+</script>
+<div class="d-flex justify-content-center">
+    <div class="row m-4 col-sm-8">
+        <form action="{{route('users_save', $user->id)}}" method="post">
+            {{ csrf_field() }}
+            @foreach($errors->all() as $error)
+            <div class="alert alert-danger">
+            <strong>Error!</strong> {{$error}}
+            </div>
+            @endforeach
+            <div class="row mb-2">
+                <div class="col-12">
+                    <label for="code" class="form-label">Name:</label>
+                    <input type="text" class="form-control" placeholder="Name" name="name" required value="{{$user->name}}">
+                </div>
+            </div>
+            @can('admin_users')
+            <div class="col-12 mb-2">
+                <label for="model" class="form-label">Roles:</label> (<a href='#' id='clean_roles'>reset</a>)
+                <select multiple class="form-select" id='roles' name="roles[]">
+                    @foreach($roles as $role)
+                    <option value='{{$role->name}}' {{$role->taken?'selected':''}}>
+                        {{$role->name}}
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-12 mb-2">
+                <label for="model" class="form-label">Direct Permissions:</label> (<a href='#' id='clean_permissions'>reset</a>)
+                <select multiple class="form-select" id='permissions' name="permissions[]">
+                @foreach($permissions as $permission)
+                    <option value='{{$permission->name}}' {{$permission->taken?'selected':''}}>
+                        {{$permission->display_name}}
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+            @endcan
 
-    {{-- ✅ عرض رسالة نجاح عند تحديث المستخدم --}}
-    @if(session('success'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-3 mb-4">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    {{-- ✅ نموذج تعديل المستخدم --}}
-    <form action="{{ route('users.update', $user) }}" method="POST">
-        @csrf
-        @method('PUT')
-
-        {{-- 🔹 حقل الاسم --}}
-        <div class="mb-4">
-            <label class="block text-gray-700 font-semibold mb-1">Name:</label>
-            <input type="text" name="name" 
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                value="{{ old('name', $user->name) }}" required>
-        </div>
-
-        {{-- 🔹 حقل البريد الإلكتروني --}}
-        <div class="mb-4">
-            <label class="block text-gray-700 font-semibold mb-1">Email:</label>
-            <input type="email" name="email" 
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                value="{{ old('email', $user->email) }}" required>
-        </div>
-
-        {{-- 🔹 حقل كلمة المرور (اختياري) --}}
-        <div class="mb-4">
-            <label class="block text-gray-700 font-semibold mb-1">Password (optional):</label>
-            <input type="password" name="password" 
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-        </div>
-
-        {{-- 🔹 زر تحديث المستخدم --}}
-        <button type="submit" 
-            class="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
-            Update User
-        </button>
-    </form>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
 </div>
 @endsection
